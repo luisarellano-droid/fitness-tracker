@@ -19,15 +19,16 @@ CREATE TABLE IF NOT EXISTS inactivity_profile (
     created_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Configuración del ejercicio
-CREATE TABLE IF NOT EXISTS user_exercise (
+-- Tabla de series (logs)
+CREATE TABLE IF NOT EXISTS exercise_set (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id uuid NOT NULL,
-    custom_name text NOT NULL,
-    progression_profile_id uuid REFERENCES progression_profile(id),
-    inactivity_profile_id uuid REFERENCES inactivity_profile(id),
-    load_mode text NOT NULL DEFAULT 'fixed_step',
-    base_weight_value numeric(8,2),
-    step_value numeric(8,2),
-    initial_level int NOT NULL DEFAULT 1
+    user_exercise_id uuid NOT NULL REFERENCES user_exercise(id),
+    reps int NOT NULL,
+    weight numeric(8,2) NOT NULL,
+    level int NOT NULL, -- El nivel en el que se realizó la serie
+    is_working_set boolean NOT NULL DEFAULT true,
+    created_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Actualizar user_exercise para guardar el nivel actual
+ALTER TABLE user_exercise ADD COLUMN IF NOT EXISTS current_level int NOT NULL DEFAULT 1;
